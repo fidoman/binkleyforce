@@ -1,0 +1,6 @@
+*.o
+Makefile
+config.log
+config.status
+debian/Makefile
+source/bin/*
