@@ -18,7 +18,7 @@ export LIBS="--sysroot=/opt/sysroot"
 
 #export PATH CC CPP
 
-make clean
+make clean || true
 #
 #setenv CFLAGS "-target=i686"
 ./configure --host=i386-unknown-freebsd14.3 --prefix=/opt/bforce --enable-netspool --disable-syslog --with-logdir=/var/log/fido --with-spooldir=/var/spool/fido

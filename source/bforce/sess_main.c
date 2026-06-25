@@ -321,15 +321,25 @@ int session_set_inbound(void)
 	if( conf_boolean(cf_split_inbound) )
 	{
 		char buf[PATH_MAX+31];
+		snprintf( buf, PATH_MAX, "%s%d.%d.%d.%d/",
+			p_inb,
+			state.node.addr.zone,
+			state.node.addr.net,
+			state.node.addr.node,
+			state.node.addr.point
+		);
+		mkdir(buf, 0700);
 		//if( state.node.addr.point ) {
 //		    snprintf( buf, PATH_MAX, "%s%d:%d/%d.%d/%s-in/",
-		    snprintf( buf, PATH_MAX, "%s%d.%d.%d.%d/%s-in/",
+
+		snprintf( buf, PATH_MAX, "%s%d.%d.%d.%d/%s-in/",
 			p_inb,
 			state.node.addr.zone,
 			state.node.addr.net,
 			state.node.addr.node,
 			state.node.addr.point,
 			state.protected? "pwd": "unchecked" );
+		mkdir(buf, 0700);
 		 /*} else {
 //		    snprintf( buf, PATH_MAX, "%s%d:%d/%d/%s-in/",
 		    snprintf( buf, PATH_MAX, "%s%d.%d.%d/%s-in/",
@@ -341,8 +351,8 @@ int session_set_inbound(void)
 		}  */
 		log("inbound: %s", buf);
 		state.inbound = (char*)xstrcpy(buf);
-		snprintf( buf, PATH_MAX+30, "/bin/mkdir -p %s -m 700", state.inbound ); /* 30 additional chars allowed */
-		system( buf );
+//		snprintf( buf, PATH_MAX+30, "/bin/mkdir -p %s -m 700", state.inbound ); /* 30 additional chars allowed */
+//		system( buf );
 	}
 	else
 	{

@@ -123,8 +123,9 @@ int binkp_loop(s_binkp_state *bstate) {
         }
         if (have_to_write==0 && (!no_more_to_send || bstate->extracmd[0]!=-1)) {
             m = binkp_getforsend(bstate, writebuf+BINKP_HEADER, &block_type, &block_length);
+            
             if(m==1 || m==3) {
-                //DEB((D_24554, "got block for sending %d %hu", block_type, block_length));
+                DEB((D_24554, "got block for sending %d %hu", block_type, block_length));
                 write_pos = 0;
                 have_to_write = block_length+BINKP_HEADER;
                 if( block_type == BINKP_BLK_CMD ) {

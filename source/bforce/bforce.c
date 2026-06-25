@@ -355,7 +355,8 @@ int main(int argc, char *argv[], char *envp[])
 	(void)setlocale(LC_ALL, "");
 	
 	/* Set secure process umask */
-	(void)umask(~(S_IRUSR|S_IWUSR));
+	(void)umask(~(S_IRUSR|S_IWUSR|S_IXUSR)); 
+	// x or we will be unable to create usable directories
 	
 	/* Now process non-option arguments */
 	if( opts.daemon == FALSE )
