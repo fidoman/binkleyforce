@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 #TOOLCHAIN=$HOME/OpenWRT/OpenWrt-Toolchain-ar71xx-for-mips_r2-gcc-4.3.3+cs_uClibc-0.9.30.1/toolchain-mips_r2_gcc-4.3.3+cs_uClibc-0.9.30.1
 
 #PATH=$PATH:$TOOLCHAIN/usr/bin
@@ -7,8 +9,8 @@
 
 export PREFIX=i386-unknown-freebsd14.3
 
-export CPP=$PREFIX-cpp12
-export CC=$PREFIX-gcc12
+export CPP=$PREFIX-cpp13
+export CC=$PREFIX-gcc13
 #export LFLAGS="-L /usr/lib32"
 export CFLAGS="--sysroot=/opt/sysroot -B /usr/lib32"
 export LIBS="--sysroot=/opt/sysroot"
@@ -16,9 +18,9 @@ export LIBS="--sysroot=/opt/sysroot"
 
 #export PATH CC CPP
 
-#make clean
+make clean
 #
 #setenv CFLAGS "-target=i686"
 ./configure --host=i386-unknown-freebsd14.3 --prefix=/opt/bforce --enable-netspool --disable-syslog --with-logdir=/var/log/fido --with-spooldir=/var/spool/fido
-#make
-#make install
+make
+make install
