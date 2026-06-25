@@ -260,6 +260,7 @@ int directory_create(const char *dirname, mode_t access_mode)
 		
 		if( !is_directory(tmpname) )
 		{
+			log("create dir %s %o", tmpname, access_mode);
 			if( mkdir(tmpname, access_mode) == -1 && errno != EEXIST )
 				return -1;
 			(void)chmod(tmpname, access_mode);

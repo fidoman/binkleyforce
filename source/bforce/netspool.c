@@ -9,6 +9,7 @@
 #include <netdb.h>
 
 #include "includes.h"
+#include "logger.h"
 #include "netspool.h"
 
 #ifdef NETSPOOL
@@ -80,7 +81,7 @@ void netspool_start(s_netspool_state *state, const char *host, const char *port,
     struct addrinfo *addrs, *a;
     char strbuf[STRBUF];
 
-    s = socket(AF_INET6, SOCK_STREAM, 0);
+    s = socket(AF_INET, SOCK_STREAM, 0);
     state->socket = s;
     if( s==-1 )
     {
@@ -91,8 +92,8 @@ void netspool_start(s_netspool_state *state, const char *host, const char *port,
 
     memset(&hint, 0, sizeof(struct addrinfo));
     hint.ai_socktype = SOCK_STREAM;
-    hint.ai_family = PF_INET6;
-    hint.ai_flags = AI_V4MAPPED;
+    hint.ai_family = PF_INET;
+//    hint.ai_flags = AI_V4MAPPED;
 
     r = getaddrinfo(host, port!=NULL? port: "24555", &hint, &addrs);
 
@@ -107,7 +108,7 @@ void netspool_start(s_netspool_state *state, const char *host, const char *port,
     while(a) {
 	r = connect(s, a->ai_addr, a->ai_addrlen);
 	if(r==-1) {
-	    //printf("%d %s\n", errno, strerror(errno));
+	    log("netspool connect: %d %s\n", errno, strerror(errno));
 	    ;
 	} else {
 	    break;

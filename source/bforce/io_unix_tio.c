@@ -234,6 +234,7 @@ void tio_set_raw_mode(TIO *tio)
 	tio->c_oflag = 0;
 	tio->c_lflag = 0;
 	tio->c_cc[VMIN] = 128;
+//	tio->c_cc[VMIN] = 1;
 	tio->c_cc[VTIME] = 1;
 #endif
 }

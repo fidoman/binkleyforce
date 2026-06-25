@@ -184,7 +184,8 @@ int binkp_loop(s_binkp_state *bstate) {
         if (want_read || have_to_write) {
           n = tty_select(want_read?&canread:NULL, have_to_write?&canwrite:NULL, timeout);
           if( n<0 ) {
-              log("binkp error on tty_select");
+              log("binkp error on tty_select %d: %s", errno, strerror(errno));
+              tty_write("\0\0", 2);
               return PRC_ERROR;
           }
         }
@@ -263,6 +264,7 @@ int binkp_loop(s_binkp_state *bstate) {
             DEB((D_24554, "%d bytes sent", n));
             write_pos += n;
             have_to_write -= n;
+            if(have_to_write==0) tty_flushout();
         }
     }
     return bstate->rc;
@@ -480,7 +482,7 @@ case 3: // send password on outgoing or pw confirmation on incoming
             buf[0] = BPMSG_PWD;
             *block_type = BINKP_BLK_CMD;
 
-            if( bstate->local_data->passwd == '\0' ) {
+            if( bstate->local_data->passwd == NULL || *(bstate->local_data->passwd)==0 ) {
                 *block_length = 1 + sprintf(buf+1, "-");
 	    }
             else if( bstate->remote_data->options & BINKP_OPT_MD5 ) {
@@ -640,6 +642,30 @@ case 4:
     return 2;
 
 }
+
+int binkp_auth_incoming(s_binkp_sysinfo *remote_data)
+{
+	if( remote_data->challenge_length > 0
+	 && strncmp(remote_data->passwd, "CRAM-MD5-", 9) == 0 )
+	{
+	        //DEB((D_24554, "md5 auth addrs %s", remote_data->addrs));
+	        //DEB((D_24554, "md5 auth anum %d", remote_data->anum));
+	        //DEB((D_24554, "md5 auth passwd %s", remote_data->passwd + 9));
+	        //DEB((D_24554, "md5 auth challenge %s", remote_data->challenge));
+	        //DEB((D_24554, "md5 auth challenge len %d", remote_data->challenge_length));
+		return session_addrs_check(state.remoteaddrs,
+		                           state.n_remoteaddr,
+		                           remote_data->passwd + 9,
+		                           remote_data->challenge,
+		                           remote_data->challenge_length);
+	}
+	
+	DEB((D_24554, "plain-text auth"));
+	return session_addrs_check(state.remoteaddrs, state.n_remoteaddr,
+	                           remote_data->passwd, NULL, 0);
+}
+
+
 
 #define PROTO_ERROR(msg) { log("error: %s", msg); bstate->rc = PRC_LOCALABORTED; \
 bstate->extracmd[0] = BPMSG_ERR; strcpy(bstate->extracmd+1, msg); bstate->extraislast = true; return 1; }
@@ -1187,24 +1213,3 @@ void binkp_process_ADR(char *buffer)
 	}
 }
 
-int binkp_auth_incoming(s_binkp_sysinfo *remote_data)
-{
-	if( remote_data->challenge_length > 0
-	 && strncmp(remote_data->passwd, "CRAM-MD5-", 9) == 0 )
-	{
-	        //DEB((D_24554, "md5 auth addrs %s", remote_data->addrs));
-	        //DEB((D_24554, "md5 auth anum %d", remote_data->anum));
-	        //DEB((D_24554, "md5 auth passwd %s", remote_data->passwd + 9));
-	        //DEB((D_24554, "md5 auth challenge %s", remote_data->challenge));
-	        //DEB((D_24554, "md5 auth challenge len %d", remote_data->challenge_length));
-		return session_addrs_check(state.remoteaddrs,
-		                           state.n_remoteaddr,
-		                           remote_data->passwd + 9,
-		                           remote_data->challenge,
-		                           remote_data->challenge_length);
-	}
-	
-	DEB((D_24554, "plain-text auth"));
-	return session_addrs_check(state.remoteaddrs, state.n_remoteaddr,
-	                           remote_data->passwd, NULL, 0);
-}

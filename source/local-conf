@@ -5,11 +5,20 @@
 #PATH=$PATH:$TOOLCHAIN/usr/bin
 #PREFIX=mips-openwrt-linux
 
-#CPP=$PREFIX-cpp
-#CC=$PREFIX-gcc
-#CFLAGS=
+export PREFIX=i386-unknown-freebsd14.3
+
+export CPP=$PREFIX-cpp12
+export CC=$PREFIX-gcc12
+#export LFLAGS="-L /usr/lib32"
+export CFLAGS="--sysroot=/opt/sysroot -B /usr/lib32"
+export LIBS="--sysroot=/opt/sysroot"
+#
 
 #export PATH CC CPP
 
 #make clean
-./configure --prefix=/opt/bforce --disable-syslog --with-logdir=/var/log/fido --with-spooldir=/var/spool/fido
+#
+#setenv CFLAGS "-target=i686"
+./configure --host=i386-unknown-freebsd14.3 --prefix=/opt/bforce --enable-netspool --disable-syslog --with-logdir=/var/log/fido --with-spooldir=/var/spool/fido
+#make
+#make install
